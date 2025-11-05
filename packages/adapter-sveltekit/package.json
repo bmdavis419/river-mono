@@ -1,6 +1,9 @@
 {
 	"name": "@davis7dotsh/river-adapter-sveltekit",
 	"version": "0.0.1",
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"dev": " nodemon --watch src --ext ts,svelte,css,html,json --exec 'bun run build'",
 		"build": "bunx --bun vite build && npm run prepack",
