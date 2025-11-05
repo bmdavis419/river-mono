@@ -33,6 +33,10 @@ export const defaultRiverProvider = (): RiverProvider<false> => ({
 			async start(controller) {
 				const encoder = new TextEncoder();
 
+				abortController.signal.addEventListener('abort', () => {
+					controller.close();
+				});
+
 				let totalChunks = 0;
 
 				const safeSendChunk = (chunk: unknown) => {

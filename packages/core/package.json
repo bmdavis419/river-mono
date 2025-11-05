@@ -1,7 +1,22 @@
 {
 	"name": "@davis7dotsh/river-core",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "core library for river",
+	"keywords": [
+		"river",
+		"streaming",
+		"ai"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"author": "Ben Davis (https://davis7.sh)",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bmdavis419/river-mono",
+		"directory": "packages/core"
+	},
 	"type": "module",
 	"main": "./dist/index.mjs",
 	"types": "./dist/index.d.mts",
@@ -21,21 +36,6 @@
 		"prepack": "bun run build",
 		"format": "prettier --write .",
 		"lint": "prettier --check ."
-	},
-	"keywords": [
-		"river",
-		"streaming",
-		"realtime"
-	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"author": "Ben Davis (https://davis7.sh)",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/bmdavis419/river-mono",
-		"directory": "packages/core"
 	},
 	"devDependencies": {
 		"@davis7dotsh/river-ts-config": "*",

@@ -40,7 +40,7 @@
     },
     "packages/adapter-sveltekit": {
       "name": "@davis7dotsh/river-adapter-sveltekit",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "devDependencies": {
         "@sveltejs/kit": "^2.47.1",
         "@sveltejs/package": "^2.5.4",
@@ -63,7 +63,7 @@
     },
     "packages/core": {
       "name": "@davis7dotsh/river-core",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "devDependencies": {
         "@davis7dotsh/river-ts-config": "*",
         "@types/bun": "latest",
@@ -78,7 +78,7 @@
     },
     "packages/provider-redis": {
       "name": "@davis7dotsh/river-provider-redis",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "devDependencies": {
         "@davis7dotsh/river-ts-config": "*",
         "@types/bun": "latest",

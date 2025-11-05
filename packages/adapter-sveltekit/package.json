@@ -1,8 +1,23 @@
 {
 	"name": "@davis7dotsh/river-adapter-sveltekit",
-	"version": "0.0.1",
+	"version": "0.0.2",
+	"description": "sveltekit adapter for river",
+	"keywords": [
+		"river",
+		"sveltekit",
+		"svelte",
+		"streaming",
+		"ai"
+	],
 	"publishConfig": {
 		"access": "public"
+	},
+	"author": "Ben Davis (https://davis7.sh)",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bmdavis419/river-mono",
+		"directory": "packages/adapter-sveltekit"
 	},
 	"scripts": {
 		"dev": " nodemon --watch src --ext ts,svelte,css,html,json --exec 'bun run build'",
@@ -50,8 +65,5 @@
 		"svelte-check": "^4.3.3",
 		"typescript": "^5.9.3",
 		"vite": "^7.1.10"
-	},
-	"keywords": [
-		"svelte"
-	]
+	}
 }

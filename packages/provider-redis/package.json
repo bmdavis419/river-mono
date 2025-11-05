@@ -1,7 +1,23 @@
 {
 	"name": "@davis7dotsh/river-provider-redis",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "redis provider for river",
+	"keywords": [
+		"river",
+		"redis",
+		"streaming",
+		"realtime"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"author": "Ben Davis (https://davis7.sh)",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bmdavis419/river-mono",
+		"directory": "packages/provider-redis"
+	},
 	"type": "module",
 	"main": "./dist/index.mjs",
 	"types": "./dist/index.d.mts",
@@ -21,22 +37,6 @@
 		"publish": "npm publish",
 		"format": "prettier --write .",
 		"lint": "prettier --check ."
-	},
-	"keywords": [
-		"river",
-		"redis",
-		"streaming",
-		"realtime"
-	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"author": "Ben Davis (https://davis7.sh)",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/bmdavis419/river-mono",
-		"directory": "packages/provider-redis"
 	},
 	"devDependencies": {
 		"@davis7dotsh/river-ts-config": "*",

@@ -31,6 +31,10 @@ export const redisProvider = (args: {
 					streamRunId: resumptionToken.streamRunId
 				});
 
+				abortController.signal.addEventListener('abort', () => {
+					controller.close();
+				});
+
 				const encoder = new TextEncoder();
 
 				const safeSendChunk = (chunk: string) => {
@@ -171,6 +175,10 @@ export const redisProvider = (args: {
 				console.log('canceling stream', reason);
 				abortController.abort(reason);
 			}
+		});
+
+		abortController.signal.addEventListener('abort', () => {
+			streamController.close();
 		});
 
 		const encoder = new TextEncoder();

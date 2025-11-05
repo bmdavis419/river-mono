@@ -11,19 +11,6 @@ const getClient = () => {
 		throw new Error('Cannot access database during build');
 	}
 
-	console.log('REDIS_URL', env.REDIS_URL);
-
-	console.log(
-		'all envs',
-		Object.keys(env)
-			.map((key) => `${key}=${env[key as keyof typeof env]}`)
-			.join(', ')
-	);
-
-	console.log('maybe?', process.env.REDIS_URL);
-
-	console.log('what if', Bun.env.REDIS_URL);
-
 	if (!globalForDb.redisClient) {
 		globalForDb.redisClient = new Redis(env.REDIS_URL);
 	}
