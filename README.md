@@ -371,3 +371,13 @@ body {
 	{/if}
 </div>
 ```
+
+## roadmap:
+
+1. make the docs actually real & useful:
+   - pages for each piece of the library with good examples
+   - automatic setup with llm prompts (copy into cursor agent and get river working in seconds)
+2. really good cursor rules for river
+3. tanstack start adapter for river
+4. s2 provider for river
+5. more complex real world examples for river
