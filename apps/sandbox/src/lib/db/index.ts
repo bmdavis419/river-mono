@@ -1,4 +1,4 @@
-import { REDIS_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import Redis from 'ioredis';
 
-export const redisClient = new Redis(REDIS_URL);
+export const redisClient = new Redis(env.REDIS_URL);
