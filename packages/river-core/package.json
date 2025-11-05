@@ -1,17 +1,20 @@
 {
-  "name": "river-core",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "scripts": {
-    "format": "prettier --write .",
-    "lint": "prettier --check ."
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@davis7dotsh/river-ts-config": "*"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+	"name": "@davis7dotsh/river-core",
+	"version": "0.0.1",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"format": "prettier --write .",
+		"lint": "prettier --check ."
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@davis7dotsh/river-ts-config": "*"
+	},
+	"peerDependencies": {
+		"typescript": "^5",
+		"neverthrow": "^8.2.0",
+		"zod": "^4.1.12"
+	}
 }
