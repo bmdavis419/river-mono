@@ -28,6 +28,9 @@
 		onError: (error) => {
 			console.error(error);
 		},
+		onAbort: () => {
+			console.log('Aborted stream');
+		},
 		onStreamInfo: ({ encodedResumptionToken }) => {
 			if (encodedResumptionToken) {
 				goto(`?resumeKey=${encodeURIComponent(encodedResumptionToken)}`);
