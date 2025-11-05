@@ -35,7 +35,7 @@ export const myFirstResumeStream = createRiverStream<{
 
 		for (const letter of onlyLetters) {
 			await appendChunk({ isVowel: isVowel(letter), letter });
-			await new Promise((resolve) => setTimeout(resolve, 200));
+			await new Promise((resolve) => setTimeout(resolve, 40));
 		}
 
 		await close();
