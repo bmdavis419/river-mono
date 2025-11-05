@@ -33,7 +33,7 @@ _an experiment by <a href="https://davis7.sh" target="_blank">ben davis</a> that
 </script>
 ```
 
-## svelteKit getting started
+## sveltekit getting started
 
 _guide for a fully resumable stream in sveltekit_
 
