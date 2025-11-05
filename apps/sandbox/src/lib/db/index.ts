@@ -1,6 +1,28 @@
-import { env } from '$env/dynamic/private';
 import Redis from 'ioredis';
+import { building } from '$app/environment';
+import { env } from '$env/dynamic/private';
 
-console.log('REDIS_URL', env.REDIS_URL);
+const globalForDb = globalThis as unknown as {
+	redisClient: Redis | undefined;
+};
 
-export const redisClient = new Redis(env.REDIS_URL);
+const getClient = () => {
+	if (building) {
+		throw new Error('Cannot access database during build');
+	}
+
+	console.log('REDIS_URL', env.REDIS_URL);
+
+	if (!globalForDb.redisClient) {
+		globalForDb.redisClient = new Redis(env.REDIS_URL);
+	}
+
+	return globalForDb.redisClient;
+};
+
+export const redisClient = new Proxy({} as Redis, {
+	get: (_, prop) => {
+		const client = getClient();
+		return client[prop as keyof Redis];
+	}
+});
