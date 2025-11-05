@@ -8,9 +8,7 @@
 			"outputs": ["build/**", "dist/**"]
 		},
 		"publish": {
-			"dependsOn": ["^publish"],
-			"inputs": ["$TURBO_DEFAULT$"],
-			"outputs": ["build/**", "dist/**"]
+			"cache": false
 		},
 		"start": {
 			"dependsOn": ["^start"]
