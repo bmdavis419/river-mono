@@ -17,9 +17,11 @@ export const myBasicRiverStream = createRiverStream<{
 
 		const letters = prompt.split('');
 
+		const onlyLetters = letters.filter((letter) => /^[a-zA-Z]$/.test(letter));
+
 		const isVowel = (letter: string) => ['a', 'e', 'i', 'o', 'u'].includes(letter.toLowerCase());
 
-		for (const letter of letters) {
+		for (const letter of onlyLetters) {
 			await appendChunk({ isVowel: isVowel(letter), letter });
 			await new Promise((resolve) => setTimeout(resolve, 30));
 		}

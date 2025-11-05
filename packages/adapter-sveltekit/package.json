@@ -1,5 +1,5 @@
 {
-	"name": "@davis7dotsh/river-sveltekit",
+	"name": "@davis7dotsh/river-adapter-sveltekit",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": " nodemon --watch src --ext ts,svelte,css,html,json --exec 'bun run build'",

@@ -33,3 +33,11 @@ export type SvelteKitRiverEndpointHandler = <T extends RiverRouter>(
 	POST: (event: RequestEvent) => Promise<Response>;
 	GET: (event: RequestEvent) => Promise<Response>;
 };
+
+// river sveltekit helper types
+
+export type RiverInputType<T extends SvelteKitMakeClientSideCaller<any, any>> =
+	T extends SvelteKitMakeClientSideCaller<infer InputType, any> ? InputType : never;
+
+export type RiverChunkType<T extends SvelteKitMakeClientSideCaller<any, any>> =
+	T extends SvelteKitMakeClientSideCaller<any, infer ChunkType> ? ChunkType : never;

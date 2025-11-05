@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { myRiverClient } from '$lib/river/client';
-
-	let fullResponse = $state('');
+	import type { RiverChunkType } from '@davis7dotsh/river-adapter-sveltekit';
 
 	let message = $state(
 		'What is the difference between typescript and javascript? Give a brief answer'
@@ -9,15 +8,19 @@
 
 	const trimmedMessage = $derived(message.trim());
 
+	type ChunkType = RiverChunkType<typeof myRiverClient.basic>;
+
+	let allChunks = $state<ChunkType[]>([]);
+
 	const basicCaller = myRiverClient.basic({
 		onChunk: (chunk) => {
-			fullResponse += chunk.isVowel + ' ' + chunk.letter + ' ';
+			allChunks.push(chunk);
 		},
 		onStart: () => {
-			console.log('Starting first stream');
+			allChunks = [];
 		},
 		onEnd: (data) => {
-			console.log('Finished first stream', data);
+			console.log('Finished first stream', data.totalChunks, data.totalTimeMs);
 		},
 		onError: (error) => {
 			console.error(error);
@@ -41,12 +44,12 @@
 	<textarea
 		bind:value={message}
 		placeholder="Type your message..."
-		class="focus:ring-primary min-h-32 w-full resize-none rounded-lg border border-neutral-700 bg-neutral-800 px-4 py-3 text-neutral-100 placeholder:text-neutral-500 focus:border-transparent focus:ring-2 focus:outline-none"
+		class="min-h-32 w-full resize-none rounded-lg border border-neutral-700 bg-neutral-800 px-4 py-3 text-neutral-100 placeholder:text-neutral-500 focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none"
 	></textarea>
 	<button
 		onclick={handleSendMessage}
 		disabled={!trimmedMessage}
-		class="bg-primary self-end rounded-lg px-6 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		class="self-end rounded-lg bg-primary px-6 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 	>
 		Send
 	</button>
@@ -56,5 +59,9 @@
 	>
 		Abort
 	</button>
-	<p>{fullResponse}</p>
+	<ul>
+		{#each allChunks as chunk}
+			<li>{chunk.isVowel ? 'Vowel' : 'Consonant'} {chunk.letter}</li>
+		{/each}
+	</ul>
 </div>

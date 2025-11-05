@@ -9,12 +9,12 @@
         "typescript": "^5.9.3",
       },
     },
-    "apps/river-sandbox": {
+    "apps/sandbox": {
       "name": "@davis7dotsh/river-sandbox",
       "version": "0.0.1",
       "dependencies": {
+        "@davis7dotsh/river-adapter-sveltekit": "*",
         "@davis7dotsh/river-core": "*",
-        "@davis7dotsh/river-sveltekit": "*",
         "neverthrow": "^8.2.0",
         "zod": "^4.1.12",
       },
@@ -34,21 +34,8 @@
         "vite": "^7.1.10",
       },
     },
-    "packages/river-core": {
-      "name": "@davis7dotsh/river-core",
-      "version": "0.0.1",
-      "devDependencies": {
-        "@davis7dotsh/river-ts-config": "*",
-        "@types/bun": "latest",
-      },
-      "peerDependencies": {
-        "neverthrow": "^8.2.0",
-        "typescript": "^5",
-        "zod": "^4.1.12",
-      },
-    },
-    "packages/river-sveltekit": {
-      "name": "@davis7dotsh/river-sveltekit",
+    "packages/adapter-sveltekit": {
+      "name": "@davis7dotsh/river-adapter-sveltekit",
       "version": "0.0.1",
       "devDependencies": {
         "@sveltejs/adapter-auto": "^7.0.0",
@@ -70,17 +57,30 @@
         "svelte": "^5.0.0",
       },
     },
+    "packages/core": {
+      "name": "@davis7dotsh/river-core",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@davis7dotsh/river-ts-config": "*",
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "neverthrow": "^8.2.0",
+        "typescript": "^5",
+        "zod": "^4.1.12",
+      },
+    },
     "packages/typescript-config": {
       "name": "@davis7dotsh/river-ts-config",
       "version": "0.0.0",
     },
   },
   "packages": {
-    "@davis7dotsh/river-core": ["@davis7dotsh/river-core@workspace:packages/river-core"],
+    "@davis7dotsh/river-adapter-sveltekit": ["@davis7dotsh/river-adapter-sveltekit@workspace:packages/adapter-sveltekit"],
 
-    "@davis7dotsh/river-sandbox": ["@davis7dotsh/river-sandbox@workspace:apps/river-sandbox"],
+    "@davis7dotsh/river-core": ["@davis7dotsh/river-core@workspace:packages/core"],
 
-    "@davis7dotsh/river-sveltekit": ["@davis7dotsh/river-sveltekit@workspace:packages/river-sveltekit"],
+    "@davis7dotsh/river-sandbox": ["@davis7dotsh/river-sandbox@workspace:apps/sandbox"],
 
     "@davis7dotsh/river-ts-config": ["@davis7dotsh/river-ts-config@workspace:packages/typescript-config"],
 
