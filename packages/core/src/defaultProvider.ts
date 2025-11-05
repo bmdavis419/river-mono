@@ -73,7 +73,8 @@ export const defaultRiverProvider = (): RiverProvider<false> => ({
 				const startSendResult = safeSendChunk(startChunk);
 
 				if (startSendResult.isErr()) {
-					return err(startSendResult.error);
+					console.error('start chunk failed to send', startSendResult.error);
+					return;
 				}
 
 				const appendChunk = async (chunk: unknown) => {
@@ -136,7 +137,6 @@ export const defaultRiverProvider = (): RiverProvider<false> => ({
 				}
 			},
 			async cancel(reason) {
-				console.log('canceling stream', reason);
 				abortController.abort(reason);
 			}
 		});

@@ -5,7 +5,11 @@ export type {
 	InferRiverStreamChunkType,
 	InferRiverStreamInputType,
 	RiverRouter,
-	RiverSpecialChunk
+	RiverSpecialChunk,
+	RiverProvider,
+	RiverSpecialEndChunk,
+	RiverSpecialErrorChunk,
+	RiverSpecialStartChunk
 } from './types';
 
 export { resumeRiverStreamParamsSchema, startRiverStreamBodySchema } from './schemas';

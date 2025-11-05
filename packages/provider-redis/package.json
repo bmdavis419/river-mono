@@ -1,0 +1,17 @@
+{
+	"name": "@davis7dotsh/river-provider-redis",
+	"version": "0.0.1",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@davis7dotsh/river-ts-config": "*"
+	},
+	"peerDependencies": {
+		"typescript": "^5",
+		"ioredis": "^5.8.2",
+		"@davis7dotsh/river-core": "*",
+		"neverthrow": "^8.2.0"
+	}
+}
