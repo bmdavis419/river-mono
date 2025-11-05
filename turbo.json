@@ -7,6 +7,14 @@
 			"inputs": ["$TURBO_DEFAULT$"],
 			"outputs": ["build/**", "dist/**"]
 		},
+		"publish": {
+			"dependsOn": ["^publish"],
+			"inputs": ["$TURBO_DEFAULT$"],
+			"outputs": ["build/**", "dist/**"]
+		},
+		"start": {
+			"dependsOn": ["^start"]
+		},
 		"lint": {
 			"dependsOn": ["^lint"]
 		},

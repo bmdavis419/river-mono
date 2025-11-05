@@ -17,6 +17,7 @@
 	"scripts": {
 		"dev": "tsdown --watch ./src",
 		"build": "tsdown",
+		"publish": "npm publish",
 		"prepack": "bun run build",
 		"format": "prettier --write .",
 		"lint": "prettier --check ."

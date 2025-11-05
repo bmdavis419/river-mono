@@ -7,8 +7,16 @@
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"clean": "find . -type d \\( -name \"node_modules\" -o -name \"dist\" -o -name \"build\" -o -name \".turbo\" -o -name \".svelte-kit\" \\) -prune -exec rm -rf {} + 2>/dev/null || true",
 		"check-types": "turbo run check-types",
+		"start:sandbox": "turbo run --filter=@davis7dotsh/river-sandbox start",
 		"build:all": "turbo run build",
-		"build:redis": "turbo run --filter=@davis7dotsh/river-provider-redis build "
+		"build:sandbox": "turbo run --filter=@davis7dotsh/river-sandbox build",
+		"build:redis": "turbo run --filter=@davis7dotsh/river-provider-redis build",
+		"build:core": "turbo run --filter=@davis7dotsh/river-core build",
+		"build:svelte": "turbo run --filter=@davis7dotsh/river-adapter-sveltekit build",
+		"publish:all": "turbo run publish",
+		"publish:redis": "turbo run --filter=@davis7dotsh/river-provider-redis publish",
+		"publish:core": "turbo run --filter=@davis7dotsh/river-core publish",
+		"publish:svelte": "turbo run --filter=@davis7dotsh/river-adapter-sveltekit publish"
 	},
 	"devDependencies": {
 		"prettier": "^3.6.2",
