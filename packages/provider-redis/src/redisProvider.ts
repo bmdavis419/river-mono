@@ -14,9 +14,6 @@ const REDIS_PROVIDER_ID = 'redis';
 const getRedisStreamKey = (args: { streamStorageId: string; streamRunId: string }) =>
 	`stream-${args.streamStorageId}-${args.streamRunId}`;
 
-// there is absolutely a leaking stream/promise SOMEWHERE in the resuming code. Need to figure that shit out...
-// it's definitely in the resume function...
-
 export const redisProvider = (args: {
 	redisClient: Redis;
 	waitUntil: (promise: Promise<unknown>) => void | undefined;
@@ -80,11 +77,11 @@ export const redisProvider = (args: {
 				let hasEnded = false;
 				let lastId = '0';
 
-				while (totalTriesToSend < 15 && !hasEnded) {
+				while (totalTriesToSend < 1000 && !hasEnded) {
 					totalTriesToSend++;
 
 					const streamsResult = await ResultAsync.fromPromise(
-						redisClient.xread('BLOCK', 500, 'STREAMS', redisStreamKey, lastId),
+						redisClient.xread('BLOCK', 10, 'STREAMS', redisStreamKey, lastId),
 						(error) => {
 							console.log('failed to read stream', error);
 							return new RiverError('Failed to read stream', error, 'stream', {
@@ -135,7 +132,9 @@ export const redisProvider = (args: {
 					);
 				}
 
-				return;
+				if (!abortController.signal.aborted) {
+					controller.close();
+				}
 			},
 			async cancel(reason) {
 				abortController.abort(reason);
