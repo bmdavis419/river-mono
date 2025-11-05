@@ -1,0 +1,17 @@
+{
+  "name": "river-core",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@davis7dotsh/river-ts-config": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
