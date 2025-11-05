@@ -164,6 +164,7 @@ export const redisProvider = (args: {
 				streamController = controller;
 			},
 			async cancel(reason) {
+				console.log('canceling stream', reason);
 				abortController.abort(reason);
 			}
 		});
@@ -189,6 +190,7 @@ export const redisProvider = (args: {
 						streamController.enqueue(encoder.encode(sseChunk));
 						return null;
 					} else {
+						console.log('tried to send chunk after stream was canceled');
 						throw new Error('tried to send chunk after stream was canceled');
 					}
 				},

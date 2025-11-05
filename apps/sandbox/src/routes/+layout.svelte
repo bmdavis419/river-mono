@@ -10,5 +10,9 @@
 </svelte:head>
 
 <div class="">
+	<nav class="flex gap-4 p-8">
+		<a href="/">Basic</a>
+		<a href="/redis">Redis Resume Stream</a>
+	</nav>
 	{@render children()}
 </div>

@@ -27,8 +27,9 @@ export const decodeRiverResumptionToken: DecodeRiverResumptionTokenFunc = (token
 		!('providerId' in result.value) ||
 		!('streamStorageId' in result.value) ||
 		!('streamRunId' in result.value) ||
-		!('streamRouterKey' in result.value)
+		!('routerStreamKey' in result.value)
 	) {
+		console.log('Invalid resumption token', result.value);
 		return err(new RiverError('Invalid resumption token', undefined, 'internal'));
 	}
 

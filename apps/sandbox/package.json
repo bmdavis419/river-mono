@@ -17,7 +17,10 @@
 	"dependencies": {
 		"@davis7dotsh/river-adapter-sveltekit": "*",
 		"@davis7dotsh/river-core": "*",
+		"@davis7dotsh/river-provider-redis": "*",
+		"ioredis": "^5.8.2",
 		"neverthrow": "^8.2.0",
+		"runed": "^0.35.1",
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
