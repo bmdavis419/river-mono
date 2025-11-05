@@ -2,7 +2,7 @@
 	"name": "@davis7dotsh/river-sveltekit",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "nodemon --watch src --ext ts,svelte,css,html,json --exec 'bun run build'",
+		"dev": " nodemon --watch src --ext ts,svelte,css,html,json --exec 'bun run build'",
 		"build": "bunx --bun vite build && npm run prepack",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "svelte-kit sync && svelte-package && publint",
