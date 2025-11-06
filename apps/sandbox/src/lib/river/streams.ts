@@ -1,12 +1,16 @@
 import { redisClient } from '$lib/db';
+import type { SvelteKitAdapterRequest } from '@davis7dotsh/river-adapter-sveltekit';
 import { createRiverStream, defaultRiverProvider } from '@davis7dotsh/river-core';
 import { redisProvider } from '@davis7dotsh/river-provider-redis';
 import z from 'zod';
 
-export const myFirstResumeStream = createRiverStream<{
-	isVowel: boolean;
-	letter: string;
-}>()
+export const myFirstResumeStream = createRiverStream<
+	{
+		isVowel: boolean;
+		letter: string;
+	},
+	SvelteKitAdapterRequest
+>()
 	.input(
 		z.object({
 			prompt: z.string()

@@ -18,8 +18,12 @@ export { encodeRiverResumptionToken, decodeRiverResumptionToken } from './resume
 
 export { createRiverRouter } from './router';
 
+export { createServerSideCaller } from './serverCallers';
+
 export { createRiverStream } from './stream';
 
 export { defaultRiverProvider } from './defaultProvider';
 
 export { RiverError } from './errors';
+
+export { createAsyncIterableStream } from './helpers';

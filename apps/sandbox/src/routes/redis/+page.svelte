@@ -87,6 +87,15 @@
 		>
 			Clear URL
 		</button>
+
+		<button
+			onclick={() => {
+				goto('/redis/background');
+			}}
+			class="self-end rounded-lg bg-primary px-6 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		>
+			Background Stream Demo
+		</button>
 	</div>
 	<ul>
 		{#each allChunks as chunk}

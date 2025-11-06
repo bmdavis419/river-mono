@@ -52,9 +52,35 @@ type RiverStreamActiveMethods<ChunkType> = {
 	close: () => Promise<Result<null, RiverError>>;
 };
 
-export type RiverProvider<IsResumable extends boolean> = {
+export type RiverProvider<ChunkType, IsResumable extends boolean> = {
 	providerId: string;
 	isResumable: IsResumable;
+	serverSideRunInBackground: (data: {
+		adapterRequest: unknown;
+		routerStreamKey: string;
+		input: unknown;
+		runnerFn: RiverStreamRunner<unknown, ChunkType, unknown>;
+	}) => Promise<Result<RiverSpecialStartChunk, RiverError>>;
+	serverSideRunAndConsume: (data: {
+		adapterRequest: unknown;
+		routerStreamKey: string;
+		input: unknown;
+		runnerFn: RiverStreamRunner<unknown, ChunkType, unknown>;
+	}) => Promise<
+		Result<
+			AsyncIterableStream<
+				| {
+						type: 'chunk';
+						chunk: ChunkType;
+				  }
+				| {
+						type: 'special';
+						special: RiverSpecialChunk;
+				  }
+			>,
+			RiverError
+		>
+	>;
 	resumeStream: (data: {
 		abortController: AbortController;
 		resumptionToken: RiverResumptionToken;
@@ -64,7 +90,7 @@ export type RiverProvider<IsResumable extends boolean> = {
 		adapterRequest: unknown;
 		routerStreamKey: string;
 		input: unknown;
-		runnerFn: RiverStreamRunner<unknown, unknown, unknown>;
+		runnerFn: RiverStreamRunner<unknown, ChunkType, unknown>;
 	}) => Promise<Result<ReadableStream<Uint8Array>, RiverError>>;
 };
 
@@ -77,7 +103,7 @@ export type RiverStream<InputType, ChunkType, IsResumable extends boolean, Adapt
 		isResumable: IsResumable;
 	};
 	inputSchema: z.ZodType<InputType>;
-	provider: RiverProvider<IsResumable>;
+	provider: RiverProvider<ChunkType, IsResumable>;
 	runner: RiverStreamRunner<InputType, ChunkType, AdapterRequestType>;
 };
 
@@ -102,7 +128,7 @@ type RiverStreamBuilderInputStep<ChunkType = unknown, AdapterRequestType = null>
 
 type RiverStreamBuilderProviderStep<InputType, ChunkType, AdapterRequestType> = {
 	provider: <IsResumable extends boolean>(
-		provider: RiverProvider<IsResumable>
+		provider: RiverProvider<ChunkType, IsResumable>
 	) => RiverStreamBuilderRunnerStep<InputType, ChunkType, IsResumable, AdapterRequestType>;
 };
 
@@ -131,6 +157,43 @@ export type DecoratedRiverRouter<T extends RiverRouter> = {
 };
 
 export type CreateRiverRouter = <T extends RiverRouter>(streams: T) => DecoratedRiverRouter<T>;
+
+// river server side callers
+
+type AsyncIterableStream<T> = ReadableStream<T> & AsyncIterable<T>;
+
+export type ServerSideCaller<T extends RiverRouter> = {
+	startStreamInBackground: <K extends keyof T>(
+		routerStreamKey: K
+	) => (args: {
+		input: InferRiverStreamInputType<T[K]>;
+		adapterRequest: InferRiverStreamAdapterRequestType<T[K]>;
+	}) => Promise<Result<RiverSpecialStartChunk, RiverError>>;
+	startStreamAndConsume: <K extends keyof T>(
+		routerStreamKey: K
+	) => (args: {
+		input: InferRiverStreamInputType<T[K]>;
+		adapterRequest: InferRiverStreamAdapterRequestType<T[K]>;
+	}) => Promise<
+		Result<
+			AsyncIterableStream<
+				| {
+						type: 'chunk';
+						chunk: InferRiverStreamChunkType<T[K]>;
+				  }
+				| {
+						type: 'special';
+						special: RiverSpecialChunk;
+				  }
+			>,
+			RiverError
+		>
+	>;
+};
+
+export type CreateServerSideCaller = <T extends RiverRouter>(
+	router: T
+) => ServerSideCaller<DecoratedRiverRouter<T>>;
 
 // river client
 
@@ -184,3 +247,6 @@ export type InferRiverStreamChunkType<T extends AnyRiverStream> =
 
 export type InferRiverStreamIsResumable<T extends AnyRiverStream> =
 	T extends RiverStream<any, any, infer IsResumable, any> ? IsResumable : never;
+
+export type InferRiverStreamAdapterRequestType<T extends AnyRiverStream> =
+	T extends RiverStream<any, any, any, infer AdapterRequestType> ? AdapterRequestType : never;
