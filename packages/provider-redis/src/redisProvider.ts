@@ -23,6 +23,137 @@ export const redisProvider = (args: {
 }): RiverProvider<any, true> => ({
 	providerId: REDIS_PROVIDER_ID,
 	isResumable: true,
+	serverSideResumeStream: async ({ resumptionToken }) => {
+		const { redisClient } = args;
+
+		const stream = new ReadableStream<
+			{ type: 'chunk'; chunk: unknown } | { type: 'special'; special: RiverSpecialChunk }
+		>({
+			async start(controller) {
+				const redisStreamKey = getRedisStreamKey({
+					streamStorageId: resumptionToken.streamStorageId,
+					streamRunId: resumptionToken.streamRunId
+				});
+
+				const safeSendChunk = (chunk: string) => {
+					let parsed: any;
+					try {
+						parsed = JSON.parse(chunk);
+					} catch {
+						parsed = chunk;
+					}
+					if ('RIVER_SPECIAL_TYPE_KEY' in parsed) {
+						return Result.fromThrowable(
+							() => {
+								controller.enqueue({ type: 'special', special: parsed });
+								return null;
+							},
+							() => {
+								return;
+							}
+						)();
+					} else {
+						return Result.fromThrowable(
+							() => {
+								controller.enqueue({ type: 'chunk', chunk: parsed });
+								return null;
+							},
+							() => {
+								return;
+							}
+						)();
+					}
+				};
+
+				const appendChunk = async (chunk: string) => {
+					const rawData = chunk.replace('data: ', '').trim();
+					return safeSendChunk(rawData);
+				};
+
+				const appendError = async (error: RiverError) => {
+					const errorChunk: RiverSpecialErrorChunk = {
+						RIVER_SPECIAL_TYPE_KEY: 'stream_error',
+						streamRunId: resumptionToken.streamRunId,
+						error
+					};
+
+					const errorSendResult = await safeSendChunk(JSON.stringify(errorChunk));
+
+					if (errorSendResult.isErr()) {
+						return errorSendResult;
+					}
+
+					return ok(null);
+				};
+
+				let totalTriesToSend = 0;
+				let hasEnded = false;
+				let lastId = '0';
+
+				while (totalTriesToSend < 1000 && !hasEnded) {
+					totalTriesToSend++;
+
+					const streamsResult = await ResultAsync.fromPromise(
+						redisClient.xread('BLOCK', 10, 'STREAMS', redisStreamKey, lastId),
+						(error) => {
+							console.log('failed to read stream', error);
+							return new RiverError('Failed to read stream', error, 'stream', {
+								redisStreamKey
+							});
+						}
+					);
+
+					if (streamsResult.isErr()) {
+						await appendError(streamsResult.error);
+						break;
+					}
+
+					const streamsValue = streamsResult.value;
+
+					if (!streamsValue || streamsValue.length === 0) {
+						continue;
+					}
+
+					const [result] = streamsValue;
+
+					if (!result) {
+						continue;
+					}
+
+					const [, entries] = result;
+
+					for (const [id, fields] of entries) {
+						const [type, data] = fields;
+
+						if (type === 'chunk' && data) {
+							if (data.includes('RIVER_SPECIAL_TYPE_KEY') && data.includes('stream_end')) {
+								console.log('stream ended');
+								hasEnded = true;
+								await appendChunk(data);
+								break;
+							}
+							await appendChunk(data);
+						}
+
+						lastId = id;
+					}
+				}
+
+				if (!hasEnded) {
+					await appendError(
+						new RiverError('Stream ended unexpectedly', undefined, 'stream', {
+							redisStreamKey
+						})
+					);
+				}
+
+				controller.close();
+			},
+			async cancel(reason) {}
+		});
+
+		return ok(createAsyncIterableStream(stream));
+	},
 	serverSideRunAndConsume: async ({ input, adapterRequest, routerStreamKey, runnerFn }) => {
 		let startTime = performance.now();
 
@@ -390,6 +521,7 @@ export const redisProvider = (args: {
 						if (type === 'chunk' && data) {
 							if (data.includes('RIVER_SPECIAL_TYPE_KEY') && data.includes('stream_end')) {
 								hasEnded = true;
+								await appendChunk(data);
 								break;
 							}
 							await appendChunk(data);

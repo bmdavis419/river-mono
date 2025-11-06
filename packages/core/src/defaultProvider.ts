@@ -24,6 +24,15 @@ export const defaultRiverProvider = (): RiverProvider<any, false> => ({
 			)
 		);
 	},
+	serverSideResumeStream: async () => {
+		return err(
+			new RiverError(
+				'Default river provider does not support resuming streams',
+				undefined,
+				'custom'
+			)
+		);
+	},
 	serverSideRunAndConsume: async ({ input, adapterRequest, routerStreamKey, runnerFn }) => {
 		let startTime = performance.now();
 

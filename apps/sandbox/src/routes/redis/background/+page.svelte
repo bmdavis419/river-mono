@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { remoteRunUnreliableStream, remoteStartUnreliableStreamInBg } from '$lib/demo.remote';
+	import {
+		remoteResumeUnreliableStream,
+		remoteRunUnreliableStream,
+		remoteStartUnreliableStreamInBg
+	} from '$lib/demo.remote';
 
 	let prompt = $state(
 		'What is the difference between typescript and javascript? Give a brief answer'
@@ -10,17 +14,35 @@
 	let isRunning = $state(false);
 
 	let resumeLink = $state<string | null>(null);
+	let resumeKey = $state<string | null>(null);
+
+	const handleResumeStreamOnServer = async () => {
+		if (!resumeKey) {
+			console.error('No resume key');
+			return;
+		}
+		const result = await remoteResumeUnreliableStream({
+			resumeKey
+		});
+
+		console.log('Resume stream on server result:', result);
+	};
 
 	const handleStartStreamOnlyOnServer = async () => {
 		isRunning = true;
-		const { totalLetters, totalVowels, resumeKey } = await remoteRunUnreliableStream({
+		const {
+			totalLetters,
+			totalVowels,
+			resumeKey: newResumeKey
+		} = await remoteRunUnreliableStream({
 			prompt: trimmedPrompt
 		});
 
 		console.log('Total letters:', totalLetters, 'Total vowels:', totalVowels);
 		isRunning = false;
-		if (resumeKey) {
-			resumeLink = `/redis?resumeKey=${encodeURIComponent(resumeKey)}`;
+		if (newResumeKey) {
+			resumeKey = newResumeKey;
+			resumeLink = `/redis?resumeKey=${encodeURIComponent(newResumeKey)}`;
 		}
 	};
 
@@ -38,7 +60,7 @@
 	};
 </script>
 
-<div class="mx-auto flex w-full max-w-2xl flex-col gap-4 p-8">
+<div class="mx-auto flex w-full max-w-4xl flex-col gap-4 p-8">
 	<h2 class="text-2xl font-bold">Background Stream Demo</h2>
 	<textarea
 		bind:value={prompt}
@@ -67,6 +89,15 @@
 		>
 			Start Stream in Background...
 		</button>
+		{#if resumeKey}
+			<button
+				onclick={handleResumeStreamOnServer}
+				disabled={!resumeKey}
+				class="self-end rounded-lg bg-primary px-6 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				Resume Stream on Server
+			</button>
+		{/if}
 		{#if resumeLink}
 			<a
 				href={resumeLink}

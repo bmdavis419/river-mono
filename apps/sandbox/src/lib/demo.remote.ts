@@ -29,6 +29,42 @@ export const remoteStartUnreliableStreamInBg = command(
 	}
 );
 
+export const remoteResumeUnreliableStream = command(
+	z.object({
+		resumeKey: z.string()
+	}),
+	async ({ resumeKey }) => {
+		const streamResult = await myServerCaller.resumeStream('redisResume')({
+			resumeKey
+		});
+
+		if (streamResult.isErr()) {
+			console.error(streamResult.error);
+			return error(500, streamResult.error);
+		}
+
+		let totalLetters = 0;
+		let totalVowels = 0;
+
+		for await (const chunk of streamResult.value) {
+			if (chunk.type === 'chunk') {
+				if (chunk.chunk.isVowel) {
+					totalVowels++;
+				}
+				totalLetters++;
+			}
+			if (chunk.type === 'special') {
+				console.log('got special chunk', chunk.special);
+			}
+		}
+
+		return {
+			totalLetters,
+			totalVowels
+		};
+	}
+);
+
 export const remoteRunUnreliableStream = command(
 	z.object({
 		prompt: z.string()
@@ -60,7 +96,6 @@ export const remoteRunUnreliableStream = command(
 					resumeKey = chunk.special.encodedResumptionToken ?? null;
 				}
 			}
-			console.log(chunk);
 			if (chunk.type === 'chunk') {
 				if (chunk.chunk.isVowel) {
 					totalVowels++;

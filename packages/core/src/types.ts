@@ -61,6 +61,16 @@ export type RiverProvider<ChunkType, IsResumable extends boolean> = {
 		input: unknown;
 		runnerFn: RiverStreamRunner<unknown, ChunkType, unknown>;
 	}) => Promise<Result<RiverSpecialStartChunk, RiverError>>;
+	serverSideResumeStream: (data: {
+		resumptionToken: RiverResumptionToken;
+	}) => Promise<
+		Result<
+			AsyncIterableStream<
+				{ type: 'chunk'; chunk: ChunkType } | { type: 'special'; special: RiverSpecialChunk }
+			>,
+			RiverError
+		>
+	>;
 	serverSideRunAndConsume: (data: {
 		adapterRequest: unknown;
 		routerStreamKey: string;
@@ -169,6 +179,19 @@ export type ServerSideCaller<T extends RiverRouter> = {
 		input: InferRiverStreamInputType<T[K]>;
 		adapterRequest: InferRiverStreamAdapterRequestType<T[K]>;
 	}) => Promise<Result<RiverSpecialStartChunk, RiverError>>;
+	resumeStream: <K extends keyof T>(
+		routerStreamKey: K
+	) => (args: {
+		resumeKey: string;
+	}) => Promise<
+		Result<
+			AsyncIterableStream<
+				| { type: 'chunk'; chunk: InferRiverStreamChunkType<T[K]> }
+				| { type: 'special'; special: RiverSpecialChunk }
+			>,
+			RiverError
+		>
+	>;
 	startStreamAndConsume: <K extends keyof T>(
 		routerStreamKey: K
 	) => (args: {
