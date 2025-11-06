@@ -1,6 +1,7 @@
 # river
 
-_an experiment by <a href="https://davis7.sh" target="_blank">ben davis</a> that went WAY too far..._
+> [!WARNING]
+> this repo is fully deprecated and will no longer be updated (was just a scratchpad for me), all changes are back in the original repo: https://github.com/bmdavis419/river
 
 ## it's TRPC, but for agents/streams...
 
