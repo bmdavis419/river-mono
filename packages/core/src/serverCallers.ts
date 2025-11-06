@@ -1,70 +1,84 @@
 import { err } from 'neverthrow';
-import type { CreateServerSideCaller } from './types';
+import type {
+	InferRiverStreamAdapterRequestType,
+	InferRiverStreamChunkType,
+	InferRiverStreamInputType,
+	MakeServerSideCaller,
+	RiverRouter,
+	ServerSideCaller
+} from './types';
 import { RiverError } from './errors';
 import { decodeRiverResumptionToken } from './resumeToken';
 
-export const createServerSideCaller: CreateServerSideCaller = (router) => ({
-	startStreamAndConsume:
-		(routerStreamKey) =>
-		async ({ input, adapterRequest }) => {
-			const stream = router[routerStreamKey];
+export const createServerSideCaller = <T extends RiverRouter>(router: T): ServerSideCaller<T> => {
+	return new Proxy({} as ServerSideCaller<T>, {
+		get<K extends keyof T>(
+			_target: ServerSideCaller<T>,
+			routerStreamKey: K & (string | symbol)
+		): MakeServerSideCaller<
+			InferRiverStreamInputType<T[K]>,
+			InferRiverStreamChunkType<T[K]>,
+			InferRiverStreamAdapterRequestType<T[K]>
+		> {
+			return {
+				startStreamInBackground: async ({ input, adapterRequest }: any) => {
+					const stream = router[routerStreamKey];
 
-			if (!stream) {
-				return err(
-					new RiverError('Stream not found', undefined, 'internal', {
-						routerStreamKey
-					})
-				);
-			}
+					if (!stream) {
+						return err(
+							new RiverError('Stream not found', undefined, 'internal', {
+								routerStreamKey
+							})
+						);
+					}
 
-			return await stream.provider.serverSideRunAndConsume({
-				input,
-				adapterRequest,
-				routerStreamKey: routerStreamKey as string,
-				runnerFn: stream.runner
-			});
-		},
-	resumeStream:
-		(routerStreamKey) =>
-		async ({ resumeKey }) => {
-			const stream = router[routerStreamKey];
+					return await stream.provider.serverSideRunInBackground({
+						input,
+						adapterRequest,
+						routerStreamKey: routerStreamKey as string,
+						runnerFn: stream.runner
+					});
+				},
+				resumeStream: async ({ resumeKey }: any) => {
+					const stream = router[routerStreamKey];
 
-			const decodedResumptionTokenResult = decodeRiverResumptionToken(resumeKey);
+					const decodedResumptionTokenResult = decodeRiverResumptionToken(resumeKey);
 
-			if (decodedResumptionTokenResult.isErr()) {
-				return err(decodedResumptionTokenResult.error);
-			}
+					if (decodedResumptionTokenResult.isErr()) {
+						return err(decodedResumptionTokenResult.error);
+					}
 
-			if (!stream) {
-				return err(
-					new RiverError('Stream not found', undefined, 'internal', {
-						routerStreamKey
-					})
-				);
-			}
+					if (!stream) {
+						return err(
+							new RiverError('Stream not found', undefined, 'internal', {
+								routerStreamKey
+							})
+						);
+					}
 
-			return await stream.provider.serverSideResumeStream({
-				resumptionToken: decodedResumptionTokenResult.value
-			});
-		},
-	startStreamInBackground:
-		(routerStreamKey) =>
-		async ({ input, adapterRequest }) => {
-			const stream = router[routerStreamKey];
+					return await stream.provider.serverSideResumeStream({
+						resumptionToken: decodedResumptionTokenResult.value
+					});
+				},
+				startStreamAndConsume: async ({ input, adapterRequest }: any) => {
+					const stream = router[routerStreamKey];
 
-			if (!stream) {
-				return err(
-					new RiverError('Stream not found', undefined, 'internal', {
-						routerStreamKey
-					})
-				);
-			}
+					if (!stream) {
+						return err(
+							new RiverError('Stream not found', undefined, 'internal', {
+								routerStreamKey
+							})
+						);
+					}
 
-			return await stream.provider.serverSideRunInBackground({
-				input,
-				adapterRequest,
-				routerStreamKey: routerStreamKey as string,
-				runnerFn: stream.runner
-			});
+					return await stream.provider.serverSideRunAndConsume({
+						input,
+						adapterRequest,
+						routerStreamKey: routerStreamKey as string,
+						runnerFn: stream.runner
+					});
+				}
+			};
 		}
-});
+	});
+};

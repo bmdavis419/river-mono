@@ -47,8 +47,20 @@ bunx sv create river-demo
 
 1. install the dependencies
 
+```
+bun add @davis7dotsh/river-core@latest @davis7dotsh/river-adapter-sveltekit@latest @davis7dotsh/river-provider-redis@latest
+```
+
+_peer dependencies you also need to install:_
+
 ```bash
-bun add zod ioredis neverthrow runed @davis7dotsh/river-core @davis7dotsh/river-adapter-sveltekit @davis7dotsh/river-provider-redis ai @openrouter/ai-sdk-provider marked
+bun add zod ioredis neverthrow
+```
+
+_dependencies for this demo:_
+
+```bash
+bun add runed ai @openrouter/ai-sdk-provider marked
 bun add -d svelte-adapter-bun
 bun remove @sveltejs/adapter-auto
 ```
@@ -401,7 +413,7 @@ export const remoteStartUnreliableStreamInBg = command(
 	}),
 	async ({ prompt }) => {
 		const event = getRequestEvent();
-		const bgStartResult = await myServerCaller.startStreamInBackground('redisResume')({
+		const bgStartResult = await myServerCaller.redisResume.startStreamInBackground({
 			input: {
 				prompt
 			},
@@ -416,8 +428,53 @@ export const remoteStartUnreliableStreamInBg = command(
 		}
 
 		return {
-			// can use this on the client side to resume the stream
 			resumeKey: bgStartResult.value.encodedResumptionToken
+		};
+	}
+);
+```
+
+** resume a stream on the server **
+
+```ts
+// src/lib/demo.remote.ts
+import { command, getRequestEvent } from '$app/server';
+import z from 'zod';
+import { myServerCaller } from './river/serverCaller';
+import { error } from '@sveltejs/kit';
+
+export const remoteResumeUnreliableStream = command(
+	z.object({
+		resumeKey: z.string()
+	}),
+	async ({ resumeKey }) => {
+		const streamResult = await myServerCaller.redisResume.resumeStream({
+			resumeKey
+		});
+
+		if (streamResult.isErr()) {
+			console.error(streamResult.error);
+			return error(500, streamResult.error);
+		}
+
+		let totalLetters = 0;
+		let totalVowels = 0;
+
+		for await (const chunk of streamResult.value) {
+			if (chunk.type === 'chunk') {
+				if (chunk.chunk.isVowel) {
+					totalVowels++;
+				}
+				totalLetters++;
+			}
+			if (chunk.type === 'special') {
+				console.log('got special chunk', chunk.special);
+			}
+		}
+
+		return {
+			totalLetters,
+			totalVowels
 		};
 	}
 );
@@ -438,7 +495,7 @@ export const remoteRunUnreliableStream = command(
 	}),
 	async ({ prompt }) => {
 		const event = getRequestEvent();
-		const streamResult = await myServerCaller.startStreamAndConsume('redisResume')({
+		const streamResult = await myServerCaller.redisResume.startStreamAndConsume({
 			input: {
 				prompt
 			},
@@ -463,7 +520,6 @@ export const remoteRunUnreliableStream = command(
 					resumeKey = chunk.special.encodedResumptionToken ?? null;
 				}
 			}
-			console.log(chunk);
 			if (chunk.type === 'chunk') {
 				if (chunk.chunk.isVowel) {
 					totalVowels++;

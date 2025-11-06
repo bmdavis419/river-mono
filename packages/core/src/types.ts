@@ -172,37 +172,30 @@ export type CreateRiverRouter = <T extends RiverRouter>(streams: T) => Decorated
 
 type AsyncIterableStream<T> = ReadableStream<T> & AsyncIterable<T>;
 
-export type ServerSideCaller<T extends RiverRouter> = {
-	startStreamInBackground: <K extends keyof T>(
-		routerStreamKey: K
-	) => (args: {
-		input: InferRiverStreamInputType<T[K]>;
-		adapterRequest: InferRiverStreamAdapterRequestType<T[K]>;
+export type MakeServerSideCaller<InputType, ChunkType, AdapterRequestType> = {
+	startStreamInBackground: (args: {
+		input: InputType;
+		adapterRequest: AdapterRequestType;
 	}) => Promise<Result<RiverSpecialStartChunk, RiverError>>;
-	resumeStream: <K extends keyof T>(
-		routerStreamKey: K
-	) => (args: {
+	resumeStream: (args: {
 		resumeKey: string;
 	}) => Promise<
 		Result<
 			AsyncIterableStream<
-				| { type: 'chunk'; chunk: InferRiverStreamChunkType<T[K]> }
-				| { type: 'special'; special: RiverSpecialChunk }
+				{ type: 'chunk'; chunk: ChunkType } | { type: 'special'; special: RiverSpecialChunk }
 			>,
 			RiverError
 		>
 	>;
-	startStreamAndConsume: <K extends keyof T>(
-		routerStreamKey: K
-	) => (args: {
-		input: InferRiverStreamInputType<T[K]>;
-		adapterRequest: InferRiverStreamAdapterRequestType<T[K]>;
+	startStreamAndConsume: (args: {
+		input: InputType;
+		adapterRequest: AdapterRequestType;
 	}) => Promise<
 		Result<
 			AsyncIterableStream<
 				| {
 						type: 'chunk';
-						chunk: InferRiverStreamChunkType<T[K]>;
+						chunk: ChunkType;
 				  }
 				| {
 						type: 'special';
@@ -214,9 +207,13 @@ export type ServerSideCaller<T extends RiverRouter> = {
 	>;
 };
 
-export type CreateServerSideCaller = <T extends RiverRouter>(
-	router: T
-) => ServerSideCaller<DecoratedRiverRouter<T>>;
+export type ServerSideCaller<T extends RiverRouter> = {
+	[K in keyof T]: MakeServerSideCaller<
+		InferRiverStreamInputType<T[K]>,
+		InferRiverStreamChunkType<T[K]>,
+		InferRiverStreamAdapterRequestType<T[K]>
+	>;
+};
 
 // river client
 

@@ -9,7 +9,7 @@ export const remoteStartUnreliableStreamInBg = command(
 	}),
 	async ({ prompt }) => {
 		const event = getRequestEvent();
-		const bgStartResult = await myServerCaller.startStreamInBackground('redisResume')({
+		const bgStartResult = await myServerCaller.redisResume.startStreamInBackground({
 			input: {
 				prompt
 			},
@@ -34,7 +34,7 @@ export const remoteResumeUnreliableStream = command(
 		resumeKey: z.string()
 	}),
 	async ({ resumeKey }) => {
-		const streamResult = await myServerCaller.resumeStream('redisResume')({
+		const streamResult = await myServerCaller.redisResume.resumeStream({
 			resumeKey
 		});
 
@@ -71,7 +71,7 @@ export const remoteRunUnreliableStream = command(
 	}),
 	async ({ prompt }) => {
 		const event = getRequestEvent();
-		const streamResult = await myServerCaller.startStreamAndConsume('redisResume')({
+		const streamResult = await myServerCaller.redisResume.startStreamAndConsume({
 			input: {
 				prompt
 			},
